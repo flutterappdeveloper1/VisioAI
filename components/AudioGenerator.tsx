@@ -5,15 +5,17 @@ import { decode, createWavBlob } from '../utils';
 import { LoadingSpinner } from './LoadingSpinner';
 
 const VOICE_OPTIONS: { id: PrebuiltVoice, name: string }[] = [
-    { id: 'Zephyr', name: 'Zephyr (Calm, Male)' },
-    { id: 'Kore', name: 'Kore (Friendly, Female)' },
-    { id: 'Puck', name: 'Puck (Upbeat, Male)' },
-    { id: 'Charon', name: 'Charon (Deep, Male)' },
-    { id: 'Fenrir', name: 'Fenrir (Assertive, Male)' },
+    { id: 'Kore', name: 'Kore (Female - Friendly)' },
+    { id: 'Zephyr', name: 'Zephyr (Male - Calm)' },
+    { id: 'Puck', name: 'Puck (Male - Upbeat)' },
+    { id: 'Charon', name: 'Charon (Male - Deep)' },
+    { id: 'Fenrir', name: 'Fenrir (Male - Assertive)' },
 ];
 
 const VOICE_STYLES = [
     { id: 'Normal', name: 'Normal Conversation' },
+    { id: 'Kid', name: 'Child / Kid Voice (Simulated)' },
+    { id: 'SoftFemale', name: 'Soft / Gentle Female' },
     { id: 'News', name: 'News Anchor (Professional)' },
     { id: 'Movie', name: 'Movie Trailer (Deep/Dramatic)' },
     { id: 'Cartoon', name: 'Cartoon (Funny/Exaggerated)' },
@@ -24,7 +26,7 @@ const VOICE_STYLES = [
 export function AudioGenerator() {
   const [prompt, setPrompt] = useState<string>('');
   const [voice, setVoice] = useState<PrebuiltVoice>('Kore');
-  const [style, setStyle] = useState<string>('Normal'); // New Style State
+  const [style, setStyle] = useState<string>('Normal');
   
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -52,18 +54,32 @@ export function AudioGenerator() {
       
       // Modify text based on style selection to influence the model's prosody
       let finalPrompt = prompt;
-      if (style !== 'Normal') {
-          if (style === 'News') {
+      
+      switch (style) {
+          case 'Kid':
+              finalPrompt = `Speak in a young, high-pitched, cheerful child's voice: ${prompt}`;
+              break;
+          case 'SoftFemale':
+              finalPrompt = `Speak in a very soft, gentle, and soothing female voice: ${prompt}`;
+              break;
+          case 'News':
               finalPrompt = `Speak like a professional news anchor reporting breaking news: ${prompt}`;
-          } else if (style === 'Movie') {
+              break;
+          case 'Movie':
               finalPrompt = `Speak in a deep, epic, dramatic movie trailer voice: ${prompt}`;
-          } else if (style === 'Cartoon') {
+              break;
+          case 'Cartoon':
               finalPrompt = `Speak in a funny, high-energy, exaggerated cartoon character voice: ${prompt}`;
-          } else if (style === 'Whisper') {
+              break;
+          case 'Whisper':
               finalPrompt = `Whisper softly and quietly: ${prompt}`;
-          } else if (style === 'Shouting') {
+              break;
+          case 'Shouting':
               finalPrompt = `Shout loudly and urgently: ${prompt}`;
-          }
+              break;
+          default:
+              // Normal
+              break;
       }
 
       const response: GenerateContentResponse = await ai.models.generateContent({
@@ -134,7 +150,7 @@ export function AudioGenerator() {
           id="prompt-audio"
           rows={5}
           className="w-full bg-gray-700 border-2 border-gray-600 rounded-lg p-4 text-gray-100 focus:ring-2 focus:ring-purple-500 transition placeholder-gray-500"
-          placeholder="e.g., Hello, welcome to the world of AI-powered audio generation."
+          placeholder="e.g., Once upon a time in a magical forest..."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
         />
@@ -168,6 +184,10 @@ export function AudioGenerator() {
             ))}
             </select>
           </div>
+      </div>
+      
+      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 text-sm text-gray-400">
+          <p><strong>Note:</strong> To simulate a "Child Voice", select the <strong>Child / Kid Voice</strong> style. For best results with female voices, ensure <strong>Kore</strong> is selected.</p>
       </div>
 
       <div className="pt-4">
