@@ -21,12 +21,14 @@ const VOICE_STYLES = [
     { id: 'Cartoon', name: 'Cartoon (Funny/Exaggerated)' },
     { id: 'Whisper', name: 'Whispering / Soft' },
     { id: 'Shouting', name: 'Shouting / Urgent' },
+    { id: 'Custom', name: 'Custom (Describe Style)' },
 ];
 
 export function AudioGenerator() {
   const [prompt, setPrompt] = useState<string>('');
   const [voice, setVoice] = useState<PrebuiltVoice>('Kore');
   const [style, setStyle] = useState<string>('Normal');
+  const [customStyleDescription, setCustomStyleDescription] = useState<string>('');
   
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,6 +39,7 @@ export function AudioGenerator() {
     setPrompt('');
     setVoice('Kore');
     setStyle('Normal');
+    setCustomStyleDescription('');
   }
 
   const handleGenerateAudio = async () => {
@@ -76,6 +79,11 @@ export function AudioGenerator() {
               break;
           case 'Shouting':
               finalPrompt = `Shout loudly and urgently: ${prompt}`;
+              break;
+          case 'Custom':
+              if (customStyleDescription.trim()) {
+                  finalPrompt = `Speak in a ${customStyleDescription} voice: ${prompt}`;
+              }
               break;
           default:
               // Normal
@@ -183,11 +191,27 @@ export function AudioGenerator() {
                 <option key={opt.id} value={opt.id}>{opt.name}</option>
             ))}
             </select>
+            
+            {style === 'Custom' && (
+              <div className="mt-3">
+                <label htmlFor="custom-style" className="block text-sm font-medium text-gray-300 mb-2">
+                  Describe the Voice Style
+                </label>
+                <input
+                  id="custom-style"
+                  type="text"
+                  className="w-full bg-gray-700 border-2 border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-purple-500 transition placeholder-gray-500"
+                  placeholder="e.g., An old wizard, A happy robot, A strict teacher..."
+                  value={customStyleDescription}
+                  onChange={(e) => setCustomStyleDescription(e.target.value)}
+                />
+              </div>
+            )}
           </div>
       </div>
       
       <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 text-sm text-gray-400">
-          <p><strong>Note:</strong> To simulate a "Child Voice", select the <strong>Child / Kid Voice</strong> style. For best results with female voices, ensure <strong>Kore</strong> is selected.</p>
+          <p><strong>Note:</strong> To simulate a "Child Voice", select the <strong>Child / Kid Voice</strong> style. For best results with female voices, ensure <strong>Kore</strong> is selected. Use <strong>Custom</strong> to describe any specific character or emotion you want to mimic.</p>
       </div>
 
       <div className="pt-4">

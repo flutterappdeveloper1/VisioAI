@@ -11,7 +11,7 @@ export function ApiKeySelector({ onSelectKey }: ApiKeySelectorProps) {
       <div className="max-w-md w-full bg-gray-800 rounded-2xl shadow-2xl p-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">API Key Required</h2>
         <p className="text-gray-400 mb-6">
-          To generate videos with Veo, you must select a valid API key from a paid Google Cloud project.
+          To use this application, you must select a valid API key from a paid Google Cloud project.
         </p>
         <button
           onClick={onSelectKey}
